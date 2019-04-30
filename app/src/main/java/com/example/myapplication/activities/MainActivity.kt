@@ -32,44 +32,45 @@ class MainActivity : AppCompatActivity() {
         initSearchButton()
     }
 
+    fun initRecylerView(){
+        viewManager = LinearLayoutManager(this);
 
+        movieAdapter = MovieAdapter(movieList, {movieItem: Movie -> movieItemClicked(movieItem)})
 
-    fun initRecyclerView() {
-        viewManager = LinearLayoutManager(this)
-
-        movieAdapter = MovieAdapter(movieList, { movieItem: Movie -> movieItemCLicked(movieItem) })
-
-        movie_list_rv.apply {
+        movie_list_rv.apply{
             setHasFixedSize(true)
             layoutManager = viewManager
-            adapter = movieAdapter;
+            adapter = movieAdapter
         }
     }
 
-    fun initSearchButton() = add_movie_btn.setOnClickListener {
-        if (!movie_name_et.text.toString().isEmpty()) {
+    fun initSearchButton() = add_movie_btn.setOnClickListener{
+        if (!movie_name_et.text.toString().isEmpty()){
             FetchMovie().execute(movie_name_et.text.toString())
         }
     }
-    fun addMovieToList(movie:Movie){
+
+    fun addMovieToList(movie: Movie){
         movieList.add(movie)
         movieAdapter.changeList(movieList)
         Log.d("Number", movieList.size.toString())
     }
 
-    private fun movieItemCLicked(item:Movie){
+    private fun movieItemClicked(item: Movie){
 
     }
 
-    private inner class FetchMovie : AsyncTask<String, Void, String>() {
+    private inner class FetchMovie: AsyncTask<String, Void, String>(){
         override fun doInBackground(vararg params: String): String {
-            if(params.isNullOrEmpty()) return ""
-            val movieName =params[0]
-            val movieUrl= NetworkUtils().buildtSearchUrl(movieName)
+            if (params.isNullOrEmpty()) return ""
 
-            return try{
+            val movieName = params[0]
+
+            val movieUrl = NetworkUtils().buildtSearchUrl(movieName)
+
+            return try {
                 NetworkUtils().getResponseFromHttpUrl(movieUrl)
-            }catch (e: IOException){
+            } catch (e: IOException){
                 ""
             }
         }
@@ -77,17 +78,15 @@ class MainActivity : AppCompatActivity() {
         override fun onPostExecute(movieInfo: String) {
             super.onPostExecute(movieInfo)
             if(!movieInfo.isEmpty()){
-                val movieJson=JSONObject(movieInfo)
-                if (movieJson.getString("Response")=="True"){
+                val movieJson = JSONObject(movieInfo)
+                if (movieJson.getString("Response") == "True"){
                     val movie = Gson().fromJson<Movie>(movieInfo, Movie::class.java)
                     addMovieToList(movie)
-                }else{
-                    Snackbar.make(main_ll, "No existe prro", Snackbar.LENGTH_SHORT).show()
+                } else{
+                    Snackbar.make(main_ll, "No existe la pelicula ", Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
-
     }
-
 
 }
