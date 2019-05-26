@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         initSearchButton()
     }
 
-    fun initRecylerView(){
+    fun initRecyclerView(){
         viewManager = LinearLayoutManager(this);
 
         movieAdapter = MovieAdapter(movieList, {movieItem: Movie -> movieItemClicked(movieItem)})
